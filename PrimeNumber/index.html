@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prime Number</title>
+    <style>
+        .form {
+            border: 1px solid black;
+            padding: 1em;
+            width: fit-content;
+            margin: auto;
+        }
+        .modal {
+            display: block;
+            width: 20%;
+            border: 3px solid grey;
+            background-color: lightgray;
+            padding: 1em;
+            position: absolute;
+            top: 2em;
+            left: 40%;
+            border-radius: 9px;
+        }
+
+        .closeButton{
+            border-radius: 6px;
+            display: block;
+            margin-left: auto;
+        }
+
+        .close{
+            display: none;
+        }
+
+        .success{
+            border-color: green;
+        }
+
+        .fail{
+            border-color: coral;
+        }
+    </style>
+</head>
+<body>
+    <div class="form">
+        <input type="text" pattern="[0-9]" id="inputNumber" name="number" placeholder="введите число"
+               title="используйте цифры">
+        <button type="submit">Проверить</button>
+    </div>
+    <div class="modal close" id="modalFrame">
+        <p id="modalMessage">
+        </p>
+        <button type="button" class="closeButton">Закрыть</button>
+    </div>
+    <script>
+        /**
+         * определяем частоиспользуюмые константы.
+         * @type {string}
+         */
+        const FAIL_CLASSNAME = 'fail';
+        const SUCCESS_CLASSNAME = 'success';
+
+        const modalElem = document.getElementById('modalFrame');
+        const modalMessageBlock = document.getElementById('modalMessage');
+        const inputNumberField = document.getElementById('inputNumber');
+
+        /**
+         * проверяем является ли число простым.
+         *
+         * @param number
+         * @returns {boolean}
+         */
+        const isPrimeNumber = (number) => {
+            if (number <= 1) {
+                return false;
+            }
+
+            // Проверка делителей от 2 до корня из числа
+            for (let i = 2; i <= Math.sqrt(number); i++) {
+                if (number % i === 0) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /**
+         * выводим сообщение. добавляем стили модальному окну. убираем display:none
+         *
+         * @param text
+         * @param className
+         */
+        const showMessage = (text, className) => {
+            modalMessageBlock.textContent = text;
+            modalElem.classList.add(className);
+            modalElem.classList.remove('close');
+        }
+
+        /**
+         *  простпейшая проверка на то является ли строка числом полностью. при приведении строки к числу мы получим
+         *  число до первого символа который не является цифрой. полуученое число мы сравниваем с изнаачальной стракой.
+         * @param str
+         * @returns {boolean}
+         */
+        const validate = (str) => {
+            return Number(str) == str;
+        }
+
+        /**
+         * получаем данные из инпута. провкряем является ли полученая строка числом полностью.
+         * делаем проверку на "простоту" числа. в зависимости от ситуации отправляем на печать тот или иной текст,
+         * сопровождая классом который нужно добавить модальному окну.
+         */
+        const onSubmitHandler = () => {
+            const value = inputNumberField.value;
+
+            if (validate(value)) {
+                if (isPrimeNumber(value)) {
+                    showMessage('Это число простое', SUCCESS_CLASSNAME)
+                } else {
+                    showMessage('Это число не является простым', FAIL_CLASSNAME);
+                }
+            } else {
+                showMessage('Это не число', FAIL_CLASSNAME);
+            }
+        }
+
+        /**
+         * закрывает модальное окно. также при этом сбрасываем стили и очищаем поле ввода
+         */
+        const closeModalHandler = () => {
+            modalElem.classList.remove(FAIL_CLASSNAME);
+            modalElem.classList.remove(SUCCESS_CLASSNAME);
+            inputNumberField.value = '';
+            modalElem.classList.add('close');
+        }
+
+        document.querySelector('.form button').addEventListener('click', onSubmitHandler);
+        document.querySelector('#modalFrame .closeButton').addEventListener('click', closeModalHandler);
+    </script>
+</body>
+</html>
